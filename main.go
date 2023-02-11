@@ -34,8 +34,8 @@ func Load(content *embed.FS) ([]string, error) {
 	}
 
 	sqls := make([]string, len(astNode))
-	for _, node := range astNode {
-		sqls = append(sqls, node.Text())
+	for i, node := range astNode {
+		sqls[i] = node.Text()
 	}
 
 	return sqls, nil
