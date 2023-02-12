@@ -7,6 +7,7 @@ import (
 
 	_ "github.com/pingcap/tidb/parser/test_driver"
 	"github.com/uh-zz/sqload/driver/mysql"
+	"github.com/uh-zz/sqload/driver/postgresql"
 )
 
 //go:embed sql/*
@@ -73,18 +74,40 @@ func TestLoader_Parse(t *testing.T) {
 				d: mysql.Dialector{},
 			},
 			args: args{
-				sqlfile: "UPDATE companies SET name = 'example' where user_id = 1;",
+				sqlfile: "CREATE USER 'jeffrey'@'localhost' IDENTIFIED WITH mysql_native_password;",
 				to:      &sqls,
 			},
 			wantErr: false,
 		},
 		{
-			name: "mysql/parse from invalid sql string",
+			name: "mysql/parse statement in postgres",
 			fields: fields{
 				d: mysql.Dialector{},
 			},
 			args: args{
-				sqlfile: "UPDATE companies SETTT name = 'example' where user_id = 1;",
+				sqlfile: "CREATE USER jeffrey WITH PASSWORD 'postgres_native_password';",
+				to:      &sqls,
+			},
+			wantErr: true,
+		},
+		{
+			name: "postgresql/parse from valid sql string",
+			fields: fields{
+				d: postgresql.Dialector{},
+			},
+			args: args{
+				sqlfile: "CREATE USER jeffrey WITH PASSWORD 'postgres_native_password';CREATE USER jeffrey WITH PASSWORD 'postgres_native_password';",
+				to:      &sqls,
+			},
+			wantErr: false,
+		},
+		{
+			name: "postgresql/parse from statement in mysql",
+			fields: fields{
+				d: postgresql.Dialector{},
+			},
+			args: args{
+				sqlfile: "CREATE USER 'jeffrey'@'localhost' IDENTIFIED WITH mysql_native_password;",
 				to:      &sqls,
 			},
 			wantErr: true,
