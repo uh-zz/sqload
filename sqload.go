@@ -16,22 +16,24 @@ func New(dialector Dialector) Loader {
 	return Loader{d: dialector}
 }
 
-func (l Loader) Load(content *embed.FS) (string, error) {
+func (l Loader) Load(content *embed.FS, to *bytes.Buffer) error {
 	fileNames, err := getAllFilenames(content)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	var buf bytes.Buffer
 	for _, name := range fileNames {
 		file, err := content.ReadFile(name)
 		if err != nil {
-			return "", err
+			return err
 		}
 		buf.Write(file)
 	}
 
-	return buf.String(), nil
+	*to = buf
+
+	return nil
 }
 
 func (l Loader) Parse(sqlfile string) ([]string, error) {
