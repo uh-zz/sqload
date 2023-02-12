@@ -1,6 +1,6 @@
 module github.com/uh-zz/sqload
 
-go 1.19
+go 1.20
 
 require github.com/pingcap/tidb/parser v0.0.0-20230212040000-288c2dd4906c
 
