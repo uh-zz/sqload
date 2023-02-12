@@ -22,16 +22,17 @@ func (l Loader) Load(content *embed.FS, to *bytes.Buffer) error {
 		return err
 	}
 
-	var buf bytes.Buffer
-	for _, name := range fileNames {
-		file, err := content.ReadFile(name)
-		if err != nil {
-			return err
-		}
-		buf.Write(file)
+	if err := load(content, fileNames, to); err != nil {
+		return err
 	}
 
-	*to = buf
+	return nil
+}
+
+func (l Loader) LoadFrom(content *embed.FS, to *bytes.Buffer, fileNames ...string) error {
+	if err := load(content, fileNames, to); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -70,4 +71,19 @@ func getAllFilenames(efs *embed.FS) ([]string, error) {
 	}
 
 	return files, nil
+}
+
+func load(content *embed.FS, fileNames []string, to *bytes.Buffer) error {
+	var buf bytes.Buffer
+	for _, name := range fileNames {
+		file, err := content.ReadFile(name)
+		if err != nil {
+			return err
+		}
+		buf.Write(file)
+	}
+
+	*to = buf
+
+	return nil
 }
