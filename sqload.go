@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"embed"
 	"io/fs"
-
-	_ "github.com/pingcap/tidb/parser/test_driver"
 )
 
 type Loader struct {
