@@ -8,12 +8,12 @@ func (d Dialector) Name() string {
 	return "mysql"
 }
 
-func (d Dialector) Parse(sqlfile string) ([]string, error) {
+func (d Dialector) Parse(sqlfile string, to *[]string) error {
 	p := parser.New()
 
 	stmtNodes, _, err := p.Parse(sqlfile, "", "")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	sqls := make([]string, len(stmtNodes))
@@ -21,5 +21,7 @@ func (d Dialector) Parse(sqlfile string) ([]string, error) {
 		sqls[i] = node.Text()
 	}
 
-	return sqls, nil
+	*to = sqls
+
+	return nil
 }

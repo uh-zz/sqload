@@ -51,3 +51,53 @@ func TestLoader_Load(t *testing.T) {
 		})
 	}
 }
+
+func TestLoader_Parse(t *testing.T) {
+	var sqls []string
+	type fields struct {
+		d Dialector
+	}
+	type args struct {
+		sqlfile string
+		to      *[]string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "mysql/parse from valid sql string",
+			fields: fields{
+				d: mysql.Dialector{},
+			},
+			args: args{
+				sqlfile: "UPDATE companies SET name = 'example' where user_id = 1;",
+				to:      &sqls,
+			},
+			wantErr: false,
+		},
+		{
+			name: "mysql/parse from invalid sql string",
+			fields: fields{
+				d: mysql.Dialector{},
+			},
+			args: args{
+				sqlfile: "UPDATE companies SETTT name = 'example' where user_id = 1;",
+				to:      &sqls,
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Loader{
+				d: tt.fields.d,
+			}
+			if err := l.Parse(tt.args.sqlfile, tt.args.to); (err != nil) != tt.wantErr {
+				t.Errorf("Loader.Parse() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

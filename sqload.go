@@ -36,20 +36,23 @@ func (l Loader) Load(content *embed.FS, to *bytes.Buffer) error {
 	return nil
 }
 
-func (l Loader) Parse(sqlfile string) ([]string, error) {
+func (l Loader) Parse(sqlfile string, to *[]string) error {
 	var (
 		sqls []string
 		err  error
 	)
 
 	if dialector, ok := l.d.(interface {
-		Parse(string) ([]string, error)
+		Parse(string, *[]string) error
 	}); ok {
-		if sqls, err = dialector.Parse(sqlfile); err != nil {
-			return nil, err
+		if err = dialector.Parse(sqlfile, to); err != nil {
+			return err
 		}
 	}
-	return sqls, nil
+
+	*to = sqls
+
+	return nil
 }
 
 func getAllFilenames(efs *embed.FS) ([]string, error) {
