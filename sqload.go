@@ -46,7 +46,7 @@ func (l Loader) Parse(sqlfile string, to *[]string) error {
 	if dialector, ok := l.d.(interface {
 		Parse(string, *[]string) error
 	}); ok {
-		if err = dialector.Parse(sqlfile, to); err != nil {
+		if err = dialector.Parse(sqlfile, &sqls); err != nil {
 			return err
 		}
 	}
